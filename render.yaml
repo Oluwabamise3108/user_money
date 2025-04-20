@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: user-money-api
+    env: python
+    buildCommand: ""
+    startCommand: ./start.sh
+    plan: free
+    envVars:
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: DATABASE_URL
+        value: "mongodb://localhost:27017/"
