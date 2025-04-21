@@ -75,7 +75,9 @@ class AccountService:
 
         transaction = WithdrawTransaction(
         account_id=account.id,
-        amount=amount
+        amount=amount,
+        )
+        
         
         return {"message": "Withdrawal successful", "new_balance": new_balance}
     
