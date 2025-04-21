@@ -64,7 +64,7 @@ class AccountService:
         amount_to_withdraw = float(transaction.amount)
 
         if amount_to_withdraw > current_balance:
-        raise HTTPException(status_code=400, detail="Insufficient funds")
+            raise HTTPException(status_code=400, detail="Insufficient funds")
 
         new_balance = current_balance - amount_to_withdraw
 
