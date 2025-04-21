@@ -52,35 +52,32 @@ class AccountService:
 
     @staticmethod
     def withdraw_fund(transaction: DepositTransactionPayload, account_id: str, user: User):
-    account = accounts_collection.find_one({"_id": ObjectId(account_id)})
+        account = accounts_collection.find_one({"_id": ObjectId(account_id)})
 
-    if not account:
-        raise HTTPException(status_code=404, detail="Account not found")
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
 
-    if account.get("user_id") != user.id:
-        raise HTTPException(status_code=403, detail="You are not authorized to withdraw from this account")
+        if account.get("user_id") != user.id:
+            raise HTTPException(status_code=403, detail="You are not authorized to withdraw from this account")
 
-    current_balance = float(account.get("balance", 0.0))
-    amount_to_withdraw = float(transaction.amount)
+        current_balance = float(account.get("balance", 0.0))
+        amount_to_withdraw = float(transaction.amount)
 
-    if amount_to_withdraw > current_balance:
+        if amount_to_withdraw > current_balance:
         raise HTTPException(status_code=400, detail="Insufficient funds")
 
-    new_balance = current_balance - amount_to_withdraw
+        new_balance = current_balance - amount_to_withdraw
 
-    accounts_collection.find_one_and_update(
-        {"_id": ObjectId(account_id)},
-        {"$set": {"balance": new_balance}}
+        accounts_collection.find_one_and_update(
+            {"_id": ObjectId(account_id)},
+            {"$set": {"balance": new_balance}}
     )
 
-    transaction = WithdrawTransaction(
-        account_id=str(account["_id"]),
-        amount=amount_to_withdraw,
-        timestamp=datetime.utcnow()
-    )
+        transaction = WithdrawTransaction(
+            account_id=account_id,
+            amount=amount_to_withdraw,
+        )
 
-    withdraw_transactions_collection.insert_one(transaction.dict())
-
-    return {"message": "Withdrawal successful", "new_balance": new_balance}
+        return {"message": "Withdrawal successful", "new_balance": new_balance}
     
 account_service = AccountService()
